@@ -21,7 +21,7 @@ class SparseAutoEncoder : public Learner, public Layer
 {
   int D, H;
   double beta, rho, lambda;
-  ActivationFunction act;
+  ActivationFunction act1, act2;
   Eigen::MatrixXd X;
   Eigen::MatrixXd W1, W2, W1d, W2d;
   Eigen::VectorXd b1, b2, b1d, b2d;
@@ -37,10 +37,11 @@ public:
    * @param beta weight of sparsity
    * @param rho desired mean activation of hidden neurons
    * @param lambda L2 norm penalty
-   * @param act activation function of the hidden layer
+   * @param act1 activation function of the encoding layer
+   * @param act2 activation function of the decoding layer
    */
   SparseAutoEncoder(int D, int H, double beta, double rho, double lambda,
-                    ActivationFunction act);
+                    ActivationFunction act1, ActivationFunction act2);
 
   // Learner interface
   virtual Eigen::VectorXd operator()(const Eigen::VectorXd& x);

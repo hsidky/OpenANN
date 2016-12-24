@@ -105,10 +105,11 @@ public:
    * @param H number of outputs
    * @param beta weight of sparsity
    * @param rho desired mean activation of hidden neurons
-   * @param act activation function of the hidden layer
+   * @param act activation function of the encoding layer
+   * @param act activation function of the decoding layer
    */
   Net& sparseAutoEncoderLayer(int H, double beta, double rho,
-                              ActivationFunction act);
+                              ActivationFunction act1, ActivationFunction act2);
   /**
    * Add a compressed fully connected hidden layer.
    * @param units number of nodes (neurons)

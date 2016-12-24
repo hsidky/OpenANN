@@ -69,12 +69,12 @@ Net& Net::restrictedBoltzmannMachineLayer(int H, int cdN, double stdDev,
 }
 
 Net& Net::sparseAutoEncoderLayer(int H, double beta, double rho,
-                                 ActivationFunction act)
+                                 ActivationFunction act1, ActivationFunction act2)
 {
-  architecture << "sae " << H << " " << beta << " " << rho << " " << (int) act
-      << " ";
+  architecture << "sae " << H << " " << beta << " " << rho << " " << (int) act1
+      << " " << (int) act2 << " ";
   return addLayer(new SparseAutoEncoder(infos.back().outputs(), H, beta, rho,
-                                        regularization.l2Penalty, act));
+                                        regularization.l2Penalty, act1, act2));
 }
 
 Net& Net::compressedLayer(int units, int params, ActivationFunction act,
@@ -288,10 +288,10 @@ void Net::load(std::istream& stream)
     {
       int H;
       double beta, rho;
-      int act;
-      stream >> H >> beta >> rho >> act;
-      OPENANN_DEBUG << "sae " << H << " " << beta << " " << rho << " " << act;
-      sparseAutoEncoderLayer(H, beta, rho, (ActivationFunction) act);
+      int act1, act2;
+      stream >> H >> beta >> rho >> act1 >> act2;
+      OPENANN_DEBUG << "sae " << H << " " << beta << " " << rho << " " << act1 << " " << act2;
+      sparseAutoEncoderLayer(H, beta, rho, (ActivationFunction) act1, (ActivationFunction) act2);
     }
     else if(type == "compressed")
     {

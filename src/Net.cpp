@@ -601,6 +601,25 @@ void Net::errorGradient(std::vector<int>::const_iterator startN,
   grad /= N;
 }
 
+Eigen::MatrixXd Net::inputGradient(const Eigen::MatrixXd& x)
+{
+  tempInput = x;
+  forwardPropagate(0);
+
+  Eigen::MatrixXd T = Eigen::MatrixXd::Ones(x.rows(), tempOutput.cols());
+  Eigen::MatrixXd* t = &T;
+  int l = L;
+  for(std::vector<Layer*>::reverse_iterator layer = layers.rbegin();
+      layer != layers.rend(); ++layer, --l)
+  {
+    // Backprop of is required for first layer to get proper dimensions wrt input.
+    const bool backpropToPrevious = l > 1;
+    (**layer).backpropInput(t, t, backpropToPrevious);
+  }
+
+  return *t;
+}
+
 void Net::initializeNetwork()
 {
   P = parameters.size();

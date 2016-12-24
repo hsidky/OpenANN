@@ -10,4 +10,9 @@ int OutputInfo::outputs()
                          std::multiplies<int>());;
 }
 
+void Layer::backpropInput(Eigen::MatrixXd*, Eigen::MatrixXd*&, bool)
+{
+	
+}
+
 }

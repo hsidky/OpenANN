@@ -349,6 +349,7 @@ net2.load("mlnn.net");
   virtual double error(unsigned int n);
   virtual double error();
   virtual bool providesGradient();
+  virtual Eigen::MatrixXd inputGradient(const Eigen::MatrixXd& x);
   virtual Eigen::VectorXd gradient(unsigned int n);
   virtual Eigen::VectorXd gradient();
   virtual void errorGradient(int n, double& value, Eigen::VectorXd& grad);

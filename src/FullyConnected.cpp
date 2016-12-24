@@ -1,5 +1,6 @@
 #include <OpenANN/layers/FullyConnected.h>
 #include <OpenANN/util/Random.h>
+#include <iostream>
 
 namespace OpenANN
 {
@@ -101,6 +102,19 @@ void FullyConnected::backpropagate(Eigen::MatrixXd* ein,
   if(backpropToPrevious)
     e = deltas * W;
   eout = &e;
+}
+
+void FullyConnected::backpropInput(Eigen::MatrixXd *yin, 
+                                   Eigen::MatrixXd *&yout, 
+                                   bool backpropToPrevious)
+{
+  const int N = a.rows();
+  yd.conservativeResize(N, Eigen::NoChange);
+  activationFunctionDerivative(act, y, yd);
+  deltas = yd.cwiseProduct(*yin);
+  if(backpropToPrevious)
+    deltas = deltas * W;
+  yout = &deltas;
 }
 
 Eigen::MatrixXd& FullyConnected::getOutput()

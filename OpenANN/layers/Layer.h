@@ -71,6 +71,17 @@ public:
    */
   virtual void backpropagate(Eigen::MatrixXd* ein, Eigen::MatrixXd*& eout,
                              bool backpropToPrevious) = 0;
+
+  /*
+   * Backpropogation of input derivatives w.r.t. output in this layer. 
+   * @param yin pointer to output signal of the higher layer. 
+   * @param yout returns a pointer to the output signal of the layer (derivative of 
+   *             the output with respect to the input)
+   * @param backpropToPrevious backpropogate outputs to previous layers
+   */
+  virtual void backpropInput(Eigen::MatrixXd* yin, Eigen::MatrixXd*& yout,
+                             bool backpropToPrevious);
+
   /**
    * Output after last forward propagation.
    * @return output

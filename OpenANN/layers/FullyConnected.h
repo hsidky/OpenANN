@@ -88,6 +88,9 @@ public:
                                 bool dropout, double* error = 0);
   virtual void backpropagate(Eigen::MatrixXd* ein, Eigen::MatrixXd*& eout,
                              bool backpropToPrevious);
+ virtual void backpropInput(Eigen::MatrixXd* yin, Eigen::MatrixXd*& yout,
+                             bool backpropToPrevious);
+
   virtual Eigen::MatrixXd& getOutput();
   virtual Eigen::VectorXd getParameters();
 };

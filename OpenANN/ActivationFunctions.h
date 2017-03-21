@@ -78,7 +78,8 @@ void activationFunction(ActivationFunction act, const Eigen::MatrixXd& a,
 void activationFunctionDerivative(ActivationFunction act,
                                   const Eigen::MatrixXd& z,
                                   Eigen::MatrixXd& gd);
-
+void activationFunctionDomain(ActivationFunction act, double* min, double* max);
+void activationFunctionRange(ActivationFunction act, double* min, double* max);
 void softmax(Eigen::MatrixXd& y);
 void logistic(const Eigen::MatrixXd& a, Eigen::MatrixXd& z);
 void logisticDerivative(const Eigen::MatrixXd& z, Eigen::MatrixXd& gd);

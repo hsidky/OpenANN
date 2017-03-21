@@ -10,6 +10,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <algorithm>
+#include <iostream>
 
 namespace OpenANN
 {
@@ -116,6 +117,71 @@ public:
     const double* end = matrix.data() + matrix.rows() * matrix.cols();
     for(double* p = matrix.data(); p < end; p++)
         *p = sampleNormalDistribution<double>() * stdDev;
+  }
+
+  template<class M> 
+  void fillUniformDistribution(M& matrix, double limit = 0.01)
+  {
+    const double* end = matrix.data() + matrix.rows() * matrix.cols();
+    for(double* p = matrix.data(); p < end; p++)
+        *p = generate<double>(-limit, 2.0*limit);
+  }
+  
+  template<class M> 
+  void fillNguyenWidrow(M& W, double dmin = -1.0, double dmax = 1.0, 
+                        double rmin = 0.0, double rmax = 1.0)
+  {
+    // First fill with uniform distribution.
+    const double* end = W.data() + W.rows() * W.cols();
+    for(double* p = W.data(); p < end; p++)
+        *p = generate<double>(-1.0, 2.0);
+    
+    double beta = 0.7*std::pow((double)W.rows(), 1.0/(double)W.cols());
+
+    M norm = W.rowwise().norm(); 
+    for(int i = 0; i < W.rows(); ++i)
+        W.row(i) *= beta/norm.array()(i);
+    
+    double x = 0.5*(dmax - dmin); 
+    double y = 0.5*(dmax + dmin);
+    W *= x;
+
+    x = 2.0/(rmax - rmin);
+    y = 1.0-rmax*x;
+    W *= x; 
+  }
+
+  template<class M, class N> 
+  void fillNguyenWidrow(M& W, N& b, double dmin = -1.0, double dmax = 1.0, 
+                        double rmin = 0.0, double rmax = 1.0)
+  {
+    // First fill with uniform distribution.
+    const double* end = W.data() + W.rows() * W.cols();
+    for(double* p = W.data(); p < end; p++)
+        *p = generate<double>(-1.0, 2.0);
+    
+    double beta = 0.7*std::pow((double)W.rows(), 1.0/(double)W.cols());
+
+    M norm = W.rowwise().norm(); 
+    for(int i = 0; i < W.rows(); ++i)
+        W.row(i) *= beta/norm.array()(i);
+    
+    double linspace = -1.0; 
+    double delta = 2.0/(std::max((double)b.rows(), 2.0) - 1.0);
+    for(int i = 0; i < b.rows(); ++i)
+      b(i) = beta*(-1.0 + delta*i);
+    
+    double x = 0.5*(dmax - dmin); 
+    double y = 0.5*(dmax + dmin);
+    W *= x;
+    b *= x;
+    b.array() += y;
+
+    x = 2.0/(rmax - rmin);
+    y = 1.0-rmax*x;
+    W *= x;
+    b *= x;
+    b.array() += y; 
   }
 };
 

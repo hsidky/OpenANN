@@ -29,6 +29,65 @@ void activationFunction(ActivationFunction act, const Eigen::MatrixXd& a,
   }
 }
 
+void activationFunctionDomain(ActivationFunction act, double* min, double* max) 
+{
+switch(act)
+  {
+  case LOGISTIC:
+    *min = -4.0; 
+    *max = 4.0; 
+    break;
+  case TANH:
+    *min = -2.0; 
+    *max = 2.0; 
+    break;
+  case TANH_SCALED:
+    *min = -2.3; 
+    *max = 2.3;
+    break;
+  case RECTIFIER:
+    *min = -1.0; 
+    *max = 1.0; 
+    break;
+  case LINEAR:
+  default:
+    *min = -1.0; 
+    *max = 1.0;
+    break;
+  }  
+}
+
+void activationFunctionRange(ActivationFunction act, double* min, double* max) 
+{
+switch(act)
+  {
+  case LOGISTIC:
+    *min = 0.0; 
+    *max = 1.0; 
+    break;
+  case TANH:
+    *min = -1.0; 
+    *max = 1.0; 
+    break;
+  case TANH_SCALED:
+    *min = -1.7159; 
+    *max = 1.7159;
+    break;
+  case RECTIFIER:
+    *min = 0.0; 
+    *max = 1.0; 
+    break;
+  case LINEAR:
+    *min = -1.0; 
+    *max = 1.0;
+    break;
+  default:
+    *min = 0.0; 
+    *max = 1.0;
+    break;
+  }  
+}
+
 void activationFunctionDerivative(ActivationFunction act,
                                   const Eigen::MatrixXd& z,
                                   Eigen::MatrixXd& gd)

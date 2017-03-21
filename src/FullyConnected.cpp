@@ -43,9 +43,12 @@ OutputInfo FullyConnected::initialize(std::vector<double*>& parameterPointers,
 void FullyConnected::initializeParameters()
 {
   RandomNumberGenerator rng;
-  rng.fillNormalDistribution(W, stdDev);
+  double dmin, dmax, rmin, rmax; 
+  activationFunctionDomain(act, &dmin, &dmax);
+  activationFunctionRange(act, &rmin, &rmax);
+  rng.fillNguyenWidrow(W, dmin, dmax, rmin, rmax);
   if(bias)
-    rng.fillNormalDistribution(b, stdDev);
+    rng.fillNguyenWidrow(W, b, dmin, dmax, rmin, rmax);
 }
 
 void FullyConnected::updatedParameters()

@@ -41,7 +41,7 @@ protected:
   Regularization regularization;
   ErrorFunction errorFunction;
   bool dropout;
-
+  double epenalty;
   bool initialized;
   int P, L;
   Eigen::VectorXd parameterVector, tempGradient;
@@ -319,7 +319,8 @@ net2.load("mlnn.net");
    */
   ///@{
   Net& setRegularization(double l1Penalty = 0.0, double l2Penalty = 0.0,
-                         double maxSquaredWeightNorm = 0.0);
+                         double maxSquaredWeightNorm = 0.0,
+                         double errorPenalty = 1.0);
   /**
    * Set the error function.
    * @param errorFunction error function
@@ -357,6 +358,8 @@ net2.load("mlnn.net");
   virtual void errorGradient(std::vector<int>::const_iterator startN,
                              std::vector<int>::const_iterator endN,
                              double& value, Eigen::VectorXd& grad);
+  virtual void errorJacobian(double& value, Eigen::MatrixXd& error, Eigen::MatrixXd& jac);
+
   virtual void finishedIteration();
   ///@}
 

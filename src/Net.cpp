@@ -22,7 +22,8 @@ namespace OpenANN
 {
 
 Net::Net()
-  : errorFunction(MSE), dropout(false), initialized(false), P(-1), L(0)
+  : errorFunction(MSE), dropout(false), initialized(false), P(-1), L(0),
+  epenalty(1.0)
 {
   layers.reserve(3);
   infos.reserve(3);
@@ -432,13 +433,15 @@ Net& Net::useDropout(bool activate)
 }
 
 Net& Net::setRegularization(double l1Penalty, double l2Penalty,
-                            double maxSquaredWeightNorm)
+                            double maxSquaredWeightNorm,
+                            double errorPenalty)
 {
   architecture << "regularization " << l1Penalty << " " << l2Penalty << " "
       << maxSquaredWeightNorm << " ";
   regularization.l1Penalty = l1Penalty;
   regularization.l2Penalty = l2Penalty;
   regularization.maxSquaredWeightNorm = maxSquaredWeightNorm;
+  epenalty = errorPenalty;
   return *this;
 }
 
@@ -520,10 +523,10 @@ double Net::error(unsigned int n)
   double regularizationError = 0;
   forwardPropagate(&regularizationError);
   if(errorFunction == CE)
-    return crossEntropy(tempOutput, trainSet->getTarget(n).transpose()) +
+    return epenalty*crossEntropy(tempOutput, trainSet->getTarget(n).transpose()) +
         regularizationError;
   else
-    return meanSquaredError(tempOutput - trainSet->getTarget(n).transpose()) +
+    return epenalty*meanSquaredError(tempOutput - trainSet->getTarget(n).transpose()) +
         regularizationError;
 }
 
@@ -592,13 +595,37 @@ void Net::errorGradient(std::vector<int>::const_iterator startN,
   value = 0;
   forwardPropagate(&value);
   tempError = tempOutput - T;
-  value += errorFunction == CE ? crossEntropy(tempOutput, T) :
-      meanSquaredError(tempError);
+  value += errorFunction == CE ? epenalty*crossEntropy(tempOutput, T) :
+      epenalty*meanSquaredError(tempError);
   backpropagate();
 
   for(int p = 0; p < P; p++)
     grad(p) = *derivatives[p];
   grad /= N;
+}
+
+void Net::errorJacobian(double& value, Eigen::MatrixXd& error, Eigen::MatrixXd& jac)
+{
+  value = 0;
+  Eigen::MatrixXd T(trainSet->samples(), trainSet->outputs());
+  Eigen::MatrixXd Y(trainSet->samples(), trainSet->outputs());
+  error.conservativeResize(trainSet->samples(), trainSet->outputs());
+  tempInput.conservativeResize(1, trainSet->inputs());
+  for(int i = 0; i < trainSet->samples(); ++i)
+  {
+    tempInput = trainSet->getInstance(i).transpose();
+    T.row(i) = trainSet->getTarget(i); 
+    double regularizationError = 0;
+    forwardPropagate(&regularizationError); 
+    tempError = tempOutput - T.row(i);
+    error.row(i) = tempError;
+    value += regularizationError + errorFunction == CE ? epenalty*crossEntropy(tempOutput, T.row(i)) :
+      epenalty*meanSquaredError(tempError);
+    backpropagate();
+    for(int p = 0; p < P; ++p)
+      jac(i,p) = *derivatives[p]/error(i);
+  }
+  value /= trainSet->samples();
 }
 
 Eigen::MatrixXd Net::inputGradient(const Eigen::MatrixXd& x)

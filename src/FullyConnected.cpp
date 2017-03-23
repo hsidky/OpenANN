@@ -46,9 +46,10 @@ void FullyConnected::initializeParameters()
   double dmin, dmax, rmin, rmax; 
   activationFunctionDomain(act, &dmin, &dmax);
   activationFunctionRange(act, &rmin, &rmax);
-  rng.fillNguyenWidrow(W, dmin, dmax, rmin, rmax);
+  //rng.fillNguyenWidrow(W, dmin, dmax, rmin, rmax);
+  rng.fillUniformDistribution(W, std::sqrt(3.0/W.rows()));
   if(bias)
-    rng.fillNguyenWidrow(W, b, dmin, dmax, rmin, rmax);
+    rng.fillUniformDistribution(b, std::sqrt(3.0/W.rows()));
 }
 
 void FullyConnected::updatedParameters()

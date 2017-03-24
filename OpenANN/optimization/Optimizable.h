@@ -110,6 +110,18 @@ public:
    * @param grad gradient of the function, lenght must be dimension()
    */
   virtual void errorGradient(double& value, Eigen::VectorXd& grad);
+
+  /**
+   * Calculates the function value and the Jacobian of all training examples. 
+   * This varies specifically from errorGradient as it returns F(x) - T, where 
+   * F(X) is the NN output and T is the target data, and dF_i/dP_j where P_j 
+   * is the jth parameter. 
+   * @param toterr Value of the error function. 
+   * @param value Error matrix of size (examples, outputs). 
+   * @param jac Jacobian matrix of size (examples, parameters). 
+   */
+  virtual void errorJacobian(double& value, Eigen::MatrixXd& error, Eigen::MatrixXd& jac){}
+
   /**
    * Calculates the errors of given training examples.
    * @param startN iterator over index vector

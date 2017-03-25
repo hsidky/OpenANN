@@ -37,14 +37,22 @@ class LMB : public Optimizer
   double lambda; 
   //! Marquardt scaling parameter.
   double lscale;
+  //! Maximum Marquardt parameter. 
+  double lmax;
 
-  // Current error.
-  double currerr;
+  //! Regularization weights. 
+  double alpha, beta; 
+
+  //! Effective number of parameters.
+  double gamma;
+
+  // Current error and SSE.
+  double currerr, sse, swe;
 
   int iteration; 
 
 public:
-  LMB(double lambda = 0.001, double lscale = 10.0);
+  LMB(double lambda = 0.005, double lscale = 10.0, double lmax = 1e10);
   ~LMB(); 
 
   virtual void setOptimizable(Optimizable& opt);

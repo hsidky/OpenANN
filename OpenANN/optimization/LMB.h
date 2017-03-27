@@ -34,7 +34,7 @@ class LMB : public Optimizer
   Eigen::VectorXd optimum;
 
   //! Marquardt parameter. 
-  double lambda; 
+  double lambda, lambda0; 
   //! Marquardt scaling parameter.
   double lscale;
   //! Maximum Marquardt parameter. 

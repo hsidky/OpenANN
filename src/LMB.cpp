@@ -14,7 +14,7 @@ namespace OpenANN
 {
 
 LMB::LMB(double l, double s, double lm)
-: lambda(l), lscale(s), lmax(lm), 
+: lambda(l), lambda0(l), lscale(s), lmax(lm),
   alpha(0), beta(0), gamma(0), currerr(0), iteration(0)
 {
 }
@@ -57,6 +57,7 @@ void LMB::optimize()
   double XX = Wb.transpose()*Wb; 
   alpha = gamma/(2.*XX);
   currerr = beta*currerr + alpha*XX;
+  lambda = lambda0;
   
   StoppingInterrupt interrupt;
   while(step() && !interrupt.isSignaled())

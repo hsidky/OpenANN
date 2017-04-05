@@ -109,6 +109,7 @@ bool LMB::step()
   while(currerr >= preverr && lambda < lmax);
 
   // Update regularization parameters. 
+  double gammap = gamma;
   if(lambda <= lmax)
   {
     opt->errorJacobian(currerr, E, J);
@@ -131,8 +132,9 @@ bool LMB::step()
                    std::abs(currerr - preverr) >= stop.minimalValueDifferences) &&
                   (stop.minimalValue == // Target performance reached? 
                    StoppingCriteria::defaultValue.minimalValue || 
-                   sse >= stop.minimalValue) && 
-                  (lambda <= lmax); // Maximum trust region radius)
+                   sse >= stop.minimalValue);// && 
+                  //(lambda <= lmax) && // Maximum trust region radius
+                  //(std::abs(gammap - gamma) >= stop.minimalSearchSpaceStep); 
 
   // Scale lambda lower since it did a good job
   // and assign current error.

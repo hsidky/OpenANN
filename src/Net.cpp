@@ -535,6 +535,7 @@ double Net::error()
   double e = 0.0;
   for(int n = 0; n < N; n++)
     e += error(n) / (double) N;
+    
   return e;
 }
 
@@ -607,17 +608,16 @@ void Net::errorGradient(std::vector<int>::const_iterator startN,
 void Net::errorJacobian(double& value, Eigen::MatrixXd& error, Eigen::MatrixXd& jac)
 {
   value = 0;
-  Eigen::MatrixXd T(trainSet->samples(), trainSet->outputs());
-  Eigen::MatrixXd Y(trainSet->samples(), trainSet->outputs());
+  Eigen::RowVectorXd T(trainSet->samples(), trainSet->outputs());
   error.conservativeResize(trainSet->samples(), trainSet->outputs());
   tempInput.conservativeResize(1, trainSet->inputs());
   for(int i = 0; i < trainSet->samples(); ++i)
   {
     tempInput = trainSet->getInstance(i).transpose();
-    T.row(i) = trainSet->getTarget(i); 
+    T = trainSet->getTarget(i); 
     double regularizationError = 0;
     forwardPropagate(&regularizationError); 
-    tempError = tempOutput - T.row(i);
+    tempError = tempOutput - T;
     error.row(i) = tempError;
     value += regularizationError + errorFunction == CE ? epenalty*crossEntropy(tempOutput, T.row(i)) :
       epenalty*meanSquaredError(tempError);
@@ -682,7 +682,7 @@ void Net::backpropagate()
     // Backprop of dE/dX is not required in input layer and first hidden layer
     const bool backpropToPrevious = l > 2;
     (**layer).backpropagate(e, e, backpropToPrevious);
-  }
+  } 
 }
 
 }

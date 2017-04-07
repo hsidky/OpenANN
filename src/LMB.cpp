@@ -90,6 +90,7 @@ bool LMB::step()
 
   // Iteratre increase our trust region until we see
   // a decrease in the error.
+  auto betan = beta/opt->examples();
   double preverr = currerr;
   sse = 0, swe = 0;
   lambda /= lscale;
@@ -98,9 +99,9 @@ bool LMB::step()
     lambda *= lscale;
     opt->setParameters(Wb);
     opt->errorJacobian(currerr, E, J);
-    JE = J.transpose()*E/opt->examples(); 
-    JJ = J.transpose()*J/opt->examples();
-    optimum = Wb - (beta*JJ + (lambda+alpha)*I).ldlt().solve(beta*JE+alpha*Wb);
+    JE.noalias() = J.transpose()*E; 
+    JJ.noalias() = J.transpose()*J;
+    optimum = Wb - (betan*JJ + (lambda+alpha)*I).ldlt().solve(betan*JE+alpha*Wb);
     swe = optimum.transpose()*optimum;
     opt->setParameters(optimum);
     sse = 2.*opt->error();
@@ -113,9 +114,8 @@ bool LMB::step()
   if(lambda <= lmax)
   {
     opt->errorJacobian(currerr, E, J);
-    JE = J.transpose()*E/opt->examples(); 
-    JJ = J.transpose()*J/opt->examples();
-    gamma = opt->dimension() - alpha*(beta*JJ + alpha*I).inverse().trace();
+    JJ.noalias() = J.transpose()*J;
+    gamma = opt->dimension() - alpha*(betan*JJ + alpha*I).inverse().trace();
     alpha = swe == 0 ? 1.0 : 0.5*gamma/swe;
     beta = sse == 0 ? 1.0 : 0.5*(opt->examples() - gamma)/sse;
     currerr = beta*sse + alpha*swe;

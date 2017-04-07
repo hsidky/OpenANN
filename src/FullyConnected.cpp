@@ -72,7 +72,7 @@ void FullyConnected::forwardPropagate(Eigen::MatrixXd* x, Eigen::MatrixXd*& y,
   this->y.conservativeResize(N, Eigen::NoChange);
   this->x = x;
   // Activate neurons
-  a = *x * W.transpose();
+  a.noalias() = *x * W.transpose();
   if(bias)
     a.rowwise() += b.transpose();
   // Compute output
@@ -95,7 +95,7 @@ void FullyConnected::backpropagate(Eigen::MatrixXd* ein,
   activationFunctionDerivative(act, y, yd);
   deltas = yd.cwiseProduct(*ein);
   // Weight derivatives
-  Wd = deltas.transpose() * *x;
+  Wd.noalias() = deltas.transpose() * *x;
   if(bias)
     bd = deltas.colwise().sum().transpose();
   if(regularization.l1Penalty > 0.0)
@@ -104,7 +104,7 @@ void FullyConnected::backpropagate(Eigen::MatrixXd* ein,
     Wd += regularization.l2Penalty * W;
   // Prepare error signals for previous layer
   if(backpropToPrevious)
-    e = deltas * W;
+    e.noalias() = deltas * W;
   eout = &e;
 }
 

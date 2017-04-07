@@ -149,10 +149,7 @@ void logisticDerivative(const Eigen::MatrixXd& z, Eigen::MatrixXd& gd)
 
 void normaltanh(const Eigen::MatrixXd& a, Eigen::MatrixXd& z)
 {
-  double const* aPtr = a.data();
-  double const* aEnd = aPtr + a.rows() * a.cols();
-  for(double* zPtr = z.data(); aPtr < aEnd; aPtr++, zPtr++)
-    *zPtr = std::tanh(*aPtr);
+  z.noalias() = a.array().tanh().matrix();
 }
 
 void normaltanhDerivative(const Eigen::MatrixXd& z, Eigen::MatrixXd& gd)
